@@ -84,7 +84,6 @@ class TagModelTestCase(BaseTaggingTransactionTestCase):
         self.assert_tags_equal(a.tags.all(), [
             "category-awesome",
             "category-release",
-            "category-awesome-1"
         ], attr="slug")
 
 class TagModelDirectTestCase(TagModelTestCase):
@@ -145,20 +144,20 @@ class TaggableManagerTestCase(BaseTaggingTestCase):
         ContentType.objects.get_for_model(self.food_model)
         apple = self.food_model.objects.create(name="apple")
         #   1  query to see which tags exist
-        # + 3  queries to create the tags.
-        # + 6  queries to create the intermediary things (including SELECTs, to
+        # + x  queries to create the tags.
+        # + x  queries to create the intermediary things (including SELECTs, to
         #      make sure we don't double create.
-        # + 12 on Django 1.6 for save points.
-        queries = 22
+        # + 16 on Django 1.6 for save points.
+        queries = 25
         if django.VERSION < (1,6):
-            queries -= 12
+            queries -= 16
         self.assertNumQueries(queries, apple.tags.add, "red", "delicious", "green")
 
         pear = self.food_model.objects.create(name="pear")
         #   1 query to see which tags exist
-        # + 4 queries to create the intermeidary things (including SELECTs, to
+        # + x queries to create the intermeidary things (including SELECTs, to
         #     make sure we dont't double create.
-        # + 4 on Django 1.6 for save points.
+        # + x on Django 1.6 for save points.
         queries = 9
         if django.VERSION < (1,6):
             queries -= 4
